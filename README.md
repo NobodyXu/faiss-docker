@@ -3,10 +3,10 @@ Docker image for faiss
 
 # Build
 
-`cd` into `faiss/` or `faiss-llvm`, and run
+`docker build --squash -t faiss path_to_repo` to build faiss with llvm toolchain.
 
-```
-docker build --squash -t faiss .
-```
+To build with gcc toolchain, pass `--build-arg toolchain=gcc` to `docker`.
+
+## *NOTE*:
 
 For `podman` user, replace `docker` here with `podman`.
