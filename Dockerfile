@@ -1,6 +1,9 @@
 # Prepare to build faiss
 FROM debian:buster AS Preparation
 
+ARG toolchain=llvm
+ADD install_llvm.sh /tmp/
+
 # Install apt-fast to speed up downloading packages
 ADD apt-fast/* /tmp/
 RUN /tmp/install_apt-fast.sh
@@ -28,18 +31,11 @@ RUN echo "MKL_THREADING_LAYER=GNU" >> /etc/environment
 
 # Install necessary build tools and headers/libs
 RUN apt-fast update && \
-    apt-fast install -y gcc clang lld llvm build-essential make swig swig3.0 python3-dev python-dev \
-                        python3-numpy python-numpy python3-setuptools python-setuptools python3-pip \
-                        python-pip python3-scipy python-scipy ffmpeg libffmpeg*-dev sudo
+    apt-fast install -y gcc build-essential make swig swig3.0 python3-dev python-dev python3-numpy python-numpy \
+                        python3-setuptools python-setuptools python3-pip python-pip python3-scipy python-scipy \
+                        ffmpeg libffmpeg*-dev sudo
 
-# Configure llvm as default toolchain
-## Use ld.ldd as default linker
-RUN ln -f $(which ld.lld) /usr/bin/ld
-
-## Use clang as default compiler
-RUN update-alternatives --install /usr/bin/cc  cc  $(which clang)   100
-RUN update-alternatives --install /usr/bin/c++ c++ $(which clang++) 100
-RUN update-alternatives --install /usr/bin/cpp cpp $(which clang) 100
+RUN if [ $toolchain = "llvm" ]; then /tmp/install_llvm.sh; fi
 
 # Remove apt-fast and purge basic software for adding apt repository
 RUN /tmp/remove_apt-fast.sh
@@ -68,7 +64,7 @@ WORKDIR /opt/faiss
 #     https://software.intel.com/en-us/forums/intel-math-kernel-library/topic/748309
 ENV LD_PRELOAD=/opt/intel/mkl/lib/intel64/libmkl_def.so:/opt/intel/mkl/lib/intel64/libmkl_avx2.so:/opt/intel/mkl/lib/intel64/libmkl_core.so:/opt/intel/mkl/lib/intel64/libmkl_intel_lp64.so:/opt/intel/mkl/lib/intel64/libmkl_intel_thread.so:/opt/intel/lib/intel64_lin/libiomp5.so
 
-ENV CC=clang CXX=clang++
+ENV CC=/usr/bin/cc CXX=/usr/bin/c++
 RUN LDFLAGS=-L/opt/intel/mkl/lib/intel64/ ./configure --without-cuda
 
 RUN make -j $(nproc)
