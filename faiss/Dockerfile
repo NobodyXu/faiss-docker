@@ -1,0 +1,72 @@
+# Prepare to build faiss
+FROM debian:buster AS Preparation
+
+# Install apt-fast to speed up downloading packages
+ADD apt-fast/* /tmp/
+RUN /tmp/install_apt-fast.sh
+
+# Install basic software for adding apt repository and downloading source code to compile
+RUN apt-fast update && \
+    apt-fast install -y --no-install-recommends apt-transport-https ca-certificates gnupg2 gnupg-agent \
+                                                software-properties-common wget curl git
+
+# Install MKL
+## Install official Intel MKL repository for apt
+## Commands below adapted from:
+##     https://software.intel.com/en-us/articles/installing-intel-free-libs-and-python-apt-repo
+##     https://github.com/eddelbuettel/mkl4deb
+RUN curl https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2019.PUB | apt-key add -
+RUN wget https://apt.repos.intel.com/setup/intelproducts.list -O /etc/apt/sources.list.d/intelproducts.list
+RUN apt-fast update && apt-fast install -y $(apt-cache search intel-mkl-2020 | cut -d '-' -f 1,2,3,4  | tail -n 1)
+
+## Configure dynamic linker to use MKL
+RUN echo "/opt/intel/lib/intel64"     >  /etc/ld.so.conf.d/mkl.conf
+RUN echo "/opt/intel/mkl/lib/intel64" >> /etc/ld.so.conf.d/mkl.conf
+RUN ldconfig
+
+RUN echo "MKL_THREADING_LAYER=GNU" >> /etc/environment
+
+# Install necessary build tools and headers/libs
+RUN apt-fast update && \
+    apt-fast install -y gcc build-essential make swig swig3.0 python3-dev python-dev python3-numpy python-numpy \
+                        python3-setuptools python-setuptools python3-pip python-pip python3-scipy python-scipy \
+                        ffmpeg libffmpeg*-dev sudo
+
+# Remove apt-fast and purge basic software for adding apt repository
+RUN /tmp/remove_apt-fast.sh
+RUN apt-get remove -y apt-transport-https gnupg2 gnupg-agent software-properties-common
+RUN apt-get autoremove -y
+
+# Clean /tmp, cache of downloaded packages and apt indexes
+RUN rm /tmp/* && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# ... Now build the software!
+FROM Preparation AS Build
+
+RUN mkdir -p /opt/ && chmod -R 777 /opt
+
+# Workaround for 'Python.h not found'
+RUN bash -c 'for py_include in /usr/include/python*; do ln -s $py_include /usr/local/include; done'
+
+# Add user as building software as root is just **not a good idea**
+RUN useradd -m user && echo 'user ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+USER user
+
+RUN git clone https://github.com/facebookresearch/faiss /opt/faiss
+WORKDIR /opt/faiss
+
+# Workaround for 'Cannot lod libmkl_acx2.so or libmkl_def.so', learnt from:
+#     https://software.intel.com/en-us/forums/intel-math-kernel-library/topic/748309
+ENV LD_PRELOAD=/opt/intel/mkl/lib/intel64/libmkl_def.so:/opt/intel/mkl/lib/intel64/libmkl_avx2.so:/opt/intel/mkl/lib/intel64/libmkl_core.so:/opt/intel/mkl/lib/intel64/libmkl_intel_lp64.so:/opt/intel/mkl/lib/intel64/libmkl_intel_thread.so:/opt/intel/lib/intel64_lin/libiomp5.so
+
+RUN LDFLAGS=-L/opt/intel/mkl/lib/intel64/ ./configure --without-cuda
+
+RUN make -j $(nproc)
+RUN make -C python -j $(nproc)
+
+RUN make test
+
+RUN sudo make install
+RUN sudo make -C python install
+
+RUN rm /tmp/*
