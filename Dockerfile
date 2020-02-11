@@ -81,13 +81,10 @@ RUN sudo make -C python install
 RUN rm /tmp/*
 
 FROM Build AS Final
-
 RUN sudo rm -rf /usr/local/src/faiss
 
 FROM Configuration AS Release
-
 COPY --from=Final /usr/local/ /usr/local/
 
 FROM Release AS WithBuildTree
-
 COPY --from=Build /usr/local/src/ /usr/local/src/
