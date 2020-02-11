@@ -42,30 +42,33 @@ RUN /tmp/remove_apt-fast.sh
 RUN apt-get remove -y apt-transport-https gnupg2 gnupg-agent software-properties-common
 RUN apt-get autoremove -y
 
+FROM Preparation AS Configuration
+
 # Clean /tmp, cache of downloaded packages and apt indexes
 RUN rm /tmp/* && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# ... Now build the software!
-FROM Preparation AS Build
-
-RUN mkdir -p /usr/local/src && chmod -R 777 /usr/local/src
-
 # Workaround for 'Python.h not found'
 RUN bash -c 'for py_include in /usr/include/python*; do ln -s $py_include /usr/local/include; done'
-
-# Add user as building software as root is just **not a good idea**
-RUN useradd -m user && echo 'user ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
-USER user
-
-RUN git clone https://github.com/facebookresearch/faiss /usr/local/src/faiss
-WORKDIR /usr/local/src/faiss
 
 # Workaround for 'Cannot lod libmkl_acx2.so or libmkl_def.so', learnt from:
 #     https://software.intel.com/en-us/forums/intel-math-kernel-library/topic/748309
 ENV LD_PRELOAD=/opt/intel/mkl/lib/intel64/libmkl_def.so:/opt/intel/mkl/lib/intel64/libmkl_avx2.so:/opt/intel/mkl/lib/intel64/libmkl_core.so:/opt/intel/mkl/lib/intel64/libmkl_intel_lp64.so:/opt/intel/mkl/lib/intel64/libmkl_intel_thread.so:/opt/intel/lib/intel64_lin/libiomp5.so
 
+# Add user as building software as root is just **not a good idea**
+RUN useradd -m user && echo 'user ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+RUN mkdir -p /usr/local/src && chmod -R 777 /usr/local/src
+USER user
+
+# Set flags
 ENV CC=/usr/bin/cc CXX=/usr/bin/c++
-RUN echo -e 'CFLAGS='-Ofast -flto'\nCXXFLAGS="$(CFLAGS)"' >~/.bashrc
+RUN echo -e 'CFLAGS="-Ofast -flto"\nCXXFLAGS="$(CFLAGS)"' >~/.bashrc
+
+# ... Now build the software!
+FROM Configuration AS Build
+
+RUN git clone https://github.com/facebookresearch/faiss /usr/local/src/faiss
+WORKDIR /usr/local/src/faiss
+
 RUN LDFLAGS=-L/opt/intel/mkl/lib/intel64/ ./configure --without-cuda
 
 RUN make -j $(nproc)
