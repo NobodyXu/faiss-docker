@@ -1,5 +1,6 @@
 # faiss-docker
-Docker image for faiss
+
+Docker image for facebookresearch/faiss
 
 # Build
 
