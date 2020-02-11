@@ -60,7 +60,7 @@ RUN mkdir -p /usr/local/src && chmod -R 777 /usr/local/src
 USER user
 
 # Set flags
-ENV CC=/usr/bin/cc CXX=/usr/bin/c++ CFLAGS="-Ofast -flto" CXXFLAGS="-Ofast -flto"
+ENV CC=/usr/bin/cc CXX=/usr/bin/c++ CFLAGS="-flto" CXXFLAGS="-flto"
 
 # ... Now build the software!
 FROM Configuration AS Build
