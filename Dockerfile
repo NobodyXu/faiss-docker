@@ -48,7 +48,7 @@ RUN rm /tmp/* && apt-get clean && rm -rf /var/lib/apt/lists/*
 # ... Now build the software!
 FROM Preparation AS Build
 
-RUN mkdir -p /opt/ && chmod -R 777 /opt
+RUN mkdir -p /usr/local/src && chmod -R 777 /usr/local/src
 
 # Workaround for 'Python.h not found'
 RUN bash -c 'for py_include in /usr/include/python*; do ln -s $py_include /usr/local/include; done'
@@ -57,8 +57,8 @@ RUN bash -c 'for py_include in /usr/include/python*; do ln -s $py_include /usr/l
 RUN useradd -m user && echo 'user ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
 USER user
 
-RUN git clone https://github.com/facebookresearch/faiss /opt/faiss
-WORKDIR /opt/faiss
+RUN git clone https://github.com/facebookresearch/faiss /usr/local/src/faiss
+WORKDIR /usr/local/src/faiss
 
 # Workaround for 'Cannot lod libmkl_acx2.so or libmkl_def.so', learnt from:
 #     https://software.intel.com/en-us/forums/intel-math-kernel-library/topic/748309
