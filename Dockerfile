@@ -84,10 +84,10 @@ FROM Build AS Final
 
 RUN sudo rm -rf /usr/local/src/faiss
 
-FROM Preparation AS Release
+FROM Configuration AS Release
 
-COPY --from=Build /usr/local/ /usr/local/
+COPY --from=Final /usr/local/ /usr/local/
 
 FROM Release AS WithBuildTree
 
-COPY --from=Build /usr/local/src /usr/local/
+COPY --from=Build /usr/local/src/ /usr/local/src/
