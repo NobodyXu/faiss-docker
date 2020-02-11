@@ -76,3 +76,11 @@ RUN sudo make install
 RUN sudo make -C python install
 
 RUN rm /tmp/*
+
+FROM Preparation AS Release
+
+COPY --from=Build [/usr/local/bin, /usr/local/lib, /usr/local/include, /usr/local/share, /usr/local/]
+
+FROM Release AS WithBuildTree
+
+COPY --from=Build /usr/local/src /usr/local/
