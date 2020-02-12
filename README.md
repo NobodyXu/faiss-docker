@@ -2,7 +2,7 @@
 
 Docker image for facebookresearch/faiss
 
-# Pull from Docker Hub
+## Pull from Docker Hub
 
 ```
 docker pull nobodyxu/faiss:latest
@@ -10,7 +10,7 @@ docker pull nobodyxu/faiss:latest
 
 For `podman` user, replace `docker` here with `podman`.
 
-# Build
+## Build
 
 ```
 git clone --depth 1 https://github.com/NobodyXu/faiss-docker
