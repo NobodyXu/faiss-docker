@@ -81,6 +81,7 @@ RUN sudo make -C python install
 RUN rm /tmp/*
 
 FROM Build AS Final
+WORKDIR /home/user
 RUN sudo rm -rf /usr/local/src/faiss
 
 FROM Configuration AS latest
