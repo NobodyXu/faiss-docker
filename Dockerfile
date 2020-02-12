@@ -80,12 +80,7 @@ RUN sudo make -C python install
 
 RUN rm /tmp/*
 
-FROM Build AS Final
-WORKDIR /home/user
-RUN sudo rm -rf /usr/local/src/faiss
+FROM debian:buster AS latest
 
-FROM Configuration AS latest
-COPY --from=Final /usr/local/ /usr/local/
-
-FROM latest AS WithBuildTree
-COPY --from=Build /usr/local/src/* /usr/local/src/
+COPY --from=Configuration / /
+COPY --from=Build /usr/local/ /usr/local/
