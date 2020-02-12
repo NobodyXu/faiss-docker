@@ -1,5 +1,10 @@
 # faiss-docker
 
+![Docker Cloud Automated build](https://img.shields.io/docker/cloud/automated/nobodyxu/faiss)
+![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/nobodyxu/faiss)
+
+![MicroBadger Size (tag)](https://img.shields.io/microbadger/image-size/nobodyxu/faiss/latest)
+
 Docker image for facebookresearch/faiss
 
 ## Pull from Docker Hub
