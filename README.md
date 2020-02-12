@@ -12,6 +12,10 @@ For `podman` user, replace `docker` here with `podman`.
 
 # Build
 
- - Run `docker build -t faiss:latest path_to_repo` to build the image.
+```
+git clone --depth 1 https://github.com/NobodyXu/faiss-docker
+docker build -t faiss:latest path_to_repo
+```
+
  - If you want to build `faiss` with gcc toolchain, pass `--build-arg toolchain=gcc` to `docker`.
  - For `podman` user, replace `docker` here with `podman`.
