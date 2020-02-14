@@ -33,7 +33,7 @@ RUN echo "MKL_THREADING_LAYER=GNU" >> /etc/environment
 RUN apt-fast update && \
     apt-fast install -y gcc build-essential make swig swig3.0 python3-dev python-dev python3-numpy python-numpy \
                         python3-setuptools python-setuptools python3-pip python-pip python3-scipy python-scipy \
-                        ffmpeg libffmpeg*-dev sudo
+                        ffmpeg libffmpeg*-dev
 
 RUN if [ $toolchain = "llvm" ]; then /tmp/install_llvm.sh; fi
 
@@ -55,9 +55,8 @@ RUN bash -c 'for py_include in /usr/include/python*; do ln -s $py_include /usr/l
 ENV LD_PRELOAD=/opt/intel/mkl/lib/intel64/libmkl_def.so:/opt/intel/mkl/lib/intel64/libmkl_avx2.so:/opt/intel/mkl/lib/intel64/libmkl_core.so:/opt/intel/mkl/lib/intel64/libmkl_intel_lp64.so:/opt/intel/mkl/lib/intel64/libmkl_intel_thread.so:/opt/intel/lib/intel64_lin/libiomp5.so
 
 # Add user as building software as root is just **not a good idea**
-RUN useradd -m user && echo 'user ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+RUN useradd -m user
 RUN mkdir -p /usr/local/src && chmod -R 777 /usr/local/src
-USER user
 
 # Set flags
 ENV CC=/usr/bin/cc CXX=/usr/bin/c++ CFLAGS="-flto" CXXFLAGS="-flto"
@@ -65,6 +64,11 @@ ENV CC=/usr/bin/cc CXX=/usr/bin/c++ CFLAGS="-flto" CXXFLAGS="-flto"
 # ... Now build the software!
 FROM Configuration AS Build
 
+## Install su-exec to replace sudo
+RUN wget https://github.com/NobodyXu/su-exec/releases/download/v0.3/su-exec -O /usr/local/bin/su-exec
+RUN chmod a+xs /usr/local/bin/su-exec
+
+USER user
 RUN git clone https://github.com/facebookresearch/faiss /usr/local/src/faiss
 WORKDIR /usr/local/src/faiss
 
@@ -75,12 +79,15 @@ RUN make -C python -j $(nproc)
 
 RUN make test
 
-RUN sudo make install
-RUN sudo make -C python install
+RUN su-exec root:root make install
+RUN su-exec root:root make -C python install
 
 WORKDIR /
 # Move to another directory for coping and chowning in latest
-RUN sudo mv /usr/local/src/faiss /home/user/faiss
+RUN su-exec root:root mv /usr/local/src/faiss /home/user/faiss
+
+## Remove su-exec
+RUN su-exec root:root rm /usr/local/bin/su-exec
 
 RUN rm /tmp/*
 
