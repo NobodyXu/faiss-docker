@@ -1,0 +1,8 @@
+#!/bin/bash
+
+echo ===Running the push hook===
+
+docker push nobodyxu/faiss:latest
+docker push nobodyxu/faiss:build
+
+echo ===Finish running the build hook===

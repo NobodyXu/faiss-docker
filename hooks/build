@@ -1,0 +1,8 @@
+#!/bin/bash
+
+echo ===Running the build hook===
+
+docker build --target latest -t nobodyxu/faiss:latest .
+docker build --target build -t nobodyxu/faiss:build .
+
+echo ===Finish running the build hook===
