@@ -88,3 +88,8 @@ FROM debian:buster AS latest
 COPY --from=Configuration / /
 COPY --from=Build /usr/local/ /usr/local/
 COPY --from=Build --chown=user:user /home/user/ /usr/local/src/
+
+ENV LD_PRELOAD=/opt/intel/mkl/lib/intel64/libmkl_def.so:/opt/intel/mkl/lib/intel64/libmkl_avx2.so:/opt/intel/mkl/lib/intel64/libmkl_core.so:/opt/intel/mkl/lib/intel64/libmkl_intel_lp64.so:/opt/intel/mkl/lib/intel64/libmkl_intel_thread.so:/opt/intel/lib/intel64_lin/libiomp5.so
+
+USER user
+WORKDIR /usr/local/src/faiss
