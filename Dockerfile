@@ -78,9 +78,13 @@ RUN make test
 RUN sudo make install
 RUN sudo make -C python install
 
+# Move to another directory for coping and chowning in latest
+RUN cd ../ && sudo mv /usr/local/src/faiss /home/user/faiss
+
 RUN rm /tmp/*
 
 FROM debian:buster AS latest
 
 COPY --from=Configuration / /
 COPY --from=Build /usr/local/ /usr/local/
+COPY --from=Build --chown=user:user /home/user/ /usr/local/src/
