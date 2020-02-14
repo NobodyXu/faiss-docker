@@ -1,0 +1,4 @@
+ 1. On podman, the stage latest contains /home/user/faiss, which is frustrating.
+    Two ways to fix:
+     - Instead of coping, which is tricky, just delete `/usr/local/src/faiss` and pass `--squash` to `podman`/`docker`.
+     - Just store `faiss` build tree in `/home/user/faiss`.
