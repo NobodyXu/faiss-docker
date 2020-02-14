@@ -101,5 +101,5 @@ ENV LD_PRELOAD=/opt/intel/mkl/lib/intel64/libmkl_def.so:/opt/intel/mkl/lib/intel
 USER user
 
 FROM latest AS build
-WORKDIR /usr/local/src/faiss
 COPY --from=Build --chown=user:user /home/user/faiss /usr/local/src/faiss/
+WORKDIR /usr/local/src/faiss
