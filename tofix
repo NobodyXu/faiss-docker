@@ -2,3 +2,5 @@
     Two ways to fix:
      - Instead of coping, which is tricky, just delete `/usr/local/src/faiss` and pass `--squash` to `podman`/`docker`.
      - Just store `faiss` build tree in `/home/user/faiss`.
+
+ 2. Failed to disable color for apt-fast
