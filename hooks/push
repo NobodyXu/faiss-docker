@@ -2,7 +2,7 @@
 
 echo ===Running the push hook===
 
-docker push nobodyxu/faiss:latest
-docker push nobodyxu/faiss:build
+docker push nobodyxu/faiss:${IMAGE_NAME}
+docker push nobodyxu/faiss:${IMAGE_NAME}-build
 
 echo ===Finish running the build hook===

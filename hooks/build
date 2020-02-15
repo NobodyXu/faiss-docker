@@ -2,7 +2,7 @@
 
 echo ===Running the build hook===
 
-docker build --target latest -t nobodyxu/faiss:latest .
-docker build --target build -t nobodyxu/faiss:build .
+docker build --target latest -t nobodyxu/faiss:${IMAGE_NAME} .
+docker build --target build -t nobodyxu/faiss:${IMAGE_NAME}-build .
 
 echo ===Finish running the build hook===
