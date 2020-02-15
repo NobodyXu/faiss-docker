@@ -74,7 +74,8 @@ RUN wget --progress=dot https://github.com/NobodyXu/su-exec/releases/download/v0
 RUN chmod a+xs /usr/local/bin/su-exec
 
 USER user
-RUN git clone https://github.com/facebookresearch/faiss /usr/local/src/faiss
+ARG branch=master
+RUN git clone -b $branch https://github.com/facebookresearch/faiss /usr/local/src/faiss
 WORKDIR /usr/local/src/faiss
 
 RUN LDFLAGS=-L/opt/intel/mkl/lib/intel64/ ./configure --without-cuda
