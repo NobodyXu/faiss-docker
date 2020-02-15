@@ -2,7 +2,7 @@
 
 echo ===Running the build hook===
 
-docker build --target Installed -t nobodyxu/faiss:${IMAGE_NAME} .
-docker build --target with-src -t nobodyxu/faiss:${IMAGE_NAME}-with-src .
+time docker build --target Installed -t nobodyxu/faiss:${IMAGE_NAME} .
+time docker build --target with-src -t nobodyxu/faiss:${IMAGE_NAME}-with-src .
 
 echo ===Finish running the build hook===
