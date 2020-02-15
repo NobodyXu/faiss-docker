@@ -13,7 +13,7 @@ RUN /tmp/apt-fast/install_apt-fast.sh
 # Install basic software for adding apt repository and downloading source code to compile
 RUN apt-fast update && \
     apt-fast install -y --no-install-recommends apt-transport-https ca-certificates gnupg2 gnupg-agent \
-                                                software-properties-common wget curl git
+                                                software-properties-common wget curl git apt-utils
 
 # Install MKL
 ## Install official Intel MKL repository for apt
@@ -41,7 +41,7 @@ RUN if [ $toolchain = "llvm" ]; then /tmp/install_llvm.sh; fi
 
 # Remove apt-fast and purge basic software for adding apt repository
 RUN /tmp/apt-fast/remove_apt-fast.sh
-RUN apt-get remove -y apt-transport-https gnupg2 gnupg-agent software-properties-common
+RUN apt-get remove -y apt-transport-https gnupg2 gnupg-agent software-properties-common apt-utils
 RUN apt-get autoremove -y
 
 FROM Preparation AS Configuration

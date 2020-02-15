@@ -2,7 +2,7 @@
 
 # Install dependencies
 apt-get update
-apt-get install -y aria2 coreutils wget sed
+apt-get install -y aria2 coreutils wget sed apt-utils
 
 # Install apt-fast
 cd /tmp
