@@ -1,4 +1,4 @@
 #!/bin/bash -ex
 
 time docker push nobodyxu/faiss:${IMAGE_NAME}
-time docker push nobodyxu/faiss:${IMAGE_NAME}-with-src
+exec time docker push nobodyxu/faiss:${IMAGE_NAME}-with-src
