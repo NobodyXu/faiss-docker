@@ -1,8 +1,4 @@
 #!/bin/bash
 
-echo ===Running the build hook===
-
 time docker build --target Installed -t nobodyxu/faiss:${IMAGE_NAME} .
 time docker build --target with-src -t nobodyxu/faiss:${IMAGE_NAME}-with-src .
-
-echo ===Finish running the build hook===
