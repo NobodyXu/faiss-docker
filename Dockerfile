@@ -4,6 +4,8 @@ FROM debian:buster AS Preparation
 ARG toolchain=llvm
 ADD install_llvm.sh /tmp/
 
+ENV DEBIAN_FRONTEND=noninteractive
+
 # Install apt-fast to speed up downloading packages
 ADD apt-fast/* /tmp/apt-fast/
 RUN /tmp/apt-fast/install_apt-fast.sh
