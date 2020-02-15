@@ -24,7 +24,7 @@ For `podman` user, replace `docker` here with `podman`.
 git clone --depth 1 https://github.com/NobodyXu/faiss-docker
 
 # For latest build
-docker build --target Installed -t faiss:latest path/to/repo
+docker build --target release -t faiss:latest path/to/repo
 # For latest build with src
 docker build --target with-src -t faiss:latest-with-src path/to/repo
 ```
