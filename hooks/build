@@ -1,4 +1,4 @@
-#!/bin/bash -ex
+#!/bin/bash
 
 docker build --target Installed -t nobodyxu/faiss:${DOCKER_TAG} .
 exec docker build --target with-src -t nobodyxu/faiss:${DOCKER_TAG}-with-src .

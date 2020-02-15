@@ -1,4 +1,4 @@
-#!/bin/bash -ex
+#!/bin/bash
 
 time docker push nobodyxu/faiss:${DOCKER_TAG}
 exec time docker push nobodyxu/faiss:${DOCKER_TAG}-with-src
