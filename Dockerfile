@@ -4,6 +4,7 @@ FROM debian:buster AS Preparation
 ARG toolchain=llvm
 ADD install_llvm.sh /tmp/
 
+# Disable interctive debconf post-install-configuration
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Install apt-fast to speed up downloading packages
@@ -38,6 +39,7 @@ RUN apt-fast update && \
                         python3-setuptools python-setuptools python3-pip python-pip python3-scipy python-scipy \
                         ffmpeg libffmpeg*-dev
 
+# Install llvm only when asked
 RUN if [ $toolchain = "llvm" ]; then /tmp/install_llvm.sh; fi
 
 # Remove apt-fast and purge basic software for adding apt repository
@@ -85,8 +87,8 @@ RUN make test
 RUN su-exec root:root make install
 RUN su-exec root:root make -C python install
 
+# Move faiss to another directory for coping and chowning in latest
 WORKDIR /
-# Move to another directory for coping and chowning in latest
 RUN su-exec root:root mv /usr/local/src/faiss /home/user/faiss
 
 ## Remove su-exec
