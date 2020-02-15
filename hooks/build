@@ -4,5 +4,5 @@
 pwd
 ls -ls
 
-time docker build --target Installed -t nobodyxu/faiss:${DOCKER_TAG} .
-exec time docker build --target with-src -t nobodyxu/faiss:${DOCKER_TAG}-with-src .
+docker build --target Installed -t nobodyxu/faiss:${DOCKER_TAG} .
+exec docker build --target with-src -t nobodyxu/faiss:${DOCKER_TAG}-with-src .
