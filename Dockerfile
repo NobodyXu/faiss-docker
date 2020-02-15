@@ -93,7 +93,7 @@ RUN su-exec root:root rm /usr/local/bin/su-exec
 
 RUN rm /tmp/*
 
-FROM debian:buster AS latest
+FROM debian:buster AS Installed
 
 COPY --from=Configuration / /
 COPY --from=Build /usr/local/ /usr/local/
@@ -102,6 +102,6 @@ ENV LD_PRELOAD=/opt/intel/mkl/lib/intel64/libmkl_def.so:/opt/intel/mkl/lib/intel
 
 USER user
 
-FROM latest AS build
+FROM Installed AS build
 COPY --from=Build --chown=user:user /home/user/faiss /usr/local/src/faiss/
 WORKDIR /usr/local/src/faiss
