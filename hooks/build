@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -ex
 
 time docker build --target Installed -t nobodyxu/faiss:${IMAGE_NAME} .
 time docker build --target with-src -t nobodyxu/faiss:${IMAGE_NAME}-with-src .
