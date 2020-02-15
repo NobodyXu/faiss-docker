@@ -1,4 +1,4 @@
 #!/bin/bash -ex
 
-docker push nobodyxu/faiss:${DOCKER_TAG}
-exec docker push nobodyxu/faiss:${DOCKER_TAG}-with-src
+time docker push nobodyxu/faiss:${DOCKER_TAG}
+exec time docker push nobodyxu/faiss:${DOCKER_TAG}-with-src
