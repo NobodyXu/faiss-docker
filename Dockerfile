@@ -44,10 +44,10 @@ RUN /tmp/apt-fast/remove_apt-fast.sh
 RUN apt-get remove -y apt-transport-https gnupg2 gnupg-agent software-properties-common apt-utils
 RUN apt-get autoremove -y
 
-FROM Preparation AS Configuration
-
 # Clean /tmp, cache of downloaded packages and apt indexes
 RUN rm /tmp/* && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+FROM Preparation AS Configuration
 
 # Workaround for 'Python.h not found'
 RUN bash -c 'for py_include in /usr/include/python*; do ln -s $py_include /usr/local/include; done'
