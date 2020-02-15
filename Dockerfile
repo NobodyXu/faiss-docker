@@ -21,7 +21,7 @@ RUN apt-fast update && \
 ##     https://software.intel.com/en-us/articles/installing-intel-free-libs-and-python-apt-repo
 ##     https://github.com/eddelbuettel/mkl4deb
 RUN curl https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2019.PUB | apt-key add -
-RUN wget https://apt.repos.intel.com/setup/intelproducts.list -O /etc/apt/sources.list.d/intelproducts.list
+RUN wget --progress=dot https://apt.repos.intel.com/setup/intelproducts.list -O /etc/apt/sources.list.d/intelproducts.list
 RUN apt-fast update && apt-fast install -y $(apt-cache search intel-mkl-2020 | cut -d '-' -f 1,2,3,4  | tail -n 1)
 
 ## Configure dynamic linker to use MKL
@@ -68,7 +68,7 @@ ENV CC=/usr/bin/cc CXX=/usr/bin/c++ CFLAGS="-flto" CXXFLAGS="-flto"
 FROM Configuration AS Build
 
 ## Install su-exec to replace sudo
-RUN wget https://github.com/NobodyXu/su-exec/releases/download/v0.3/su-exec -O /usr/local/bin/su-exec
+RUN wget --progress=dot https://github.com/NobodyXu/su-exec/releases/download/v0.3/su-exec -O /usr/local/bin/su-exec
 RUN chmod a+xs /usr/local/bin/su-exec
 
 USER user
