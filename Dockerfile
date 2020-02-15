@@ -92,7 +92,7 @@ RUN su-exec root:root mv /usr/local/src/faiss /home/user/faiss
 ## Remove su-exec
 RUN su-exec root:root rm /usr/local/bin/su-exec
 
-RUN rm /tmp/*
+RUN rm -rf /tmp/*
 
 FROM debian:buster AS Installed
 
