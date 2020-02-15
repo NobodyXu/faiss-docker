@@ -10,7 +10,10 @@ Docker image for facebookresearch/faiss
 ## Pull from Docker Hub
 
 ```
+# For latest build
 docker pull nobodyxu/faiss:latest
+# For latest build with src
+docker pull nobodyxu/faiss:latest-with-src
 ```
 
 For `podman` user, replace `docker` here with `podman`.
@@ -19,7 +22,11 @@ For `podman` user, replace `docker` here with `podman`.
 
 ```
 git clone --depth 1 https://github.com/NobodyXu/faiss-docker
-docker build -t faiss:latest path_to_repo
+
+# For latest build
+docker build --target Installed -t faiss:latest path_to_repo
+# For latest build with src
+docker build --target with-src -t faiss:latest-with-src path/to/repo
 ```
 
  - If you want to build `faiss` with gcc toolchain, pass `--build-arg toolchain=gcc` to `docker`.
