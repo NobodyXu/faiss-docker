@@ -1,8 +1,4 @@
 #!/bin/bash -ex
 
-# Print debugging infomation
-pwd
-ls -ls
-
 docker build --target Installed -t nobodyxu/faiss:${DOCKER_TAG} .
 exec docker build --target with-src -t nobodyxu/faiss:${DOCKER_TAG}-with-src .
