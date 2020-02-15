@@ -1,2 +1,1 @@
- 1. Install apt-fast as early as possible so that it can speed up installation of other softwares.
- 2. Disable use of terminal escape in wget
+ 1. Disable use of terminal escape in wget
