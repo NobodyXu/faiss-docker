@@ -33,7 +33,8 @@ RUN echo "MKL_THREADING_LAYER=GNU" >> /etc/environment
 
 # Install necessary build tools and headers/libs
 RUN apt-fast update && \
-    apt-fast install -y gcc build-essential make swig swig3.0 python3-dev python-dev python3-numpy python-numpy \
+    apt-fast install -y --no-install-recommends \
+                        gcc build-essential make swig swig3.0 python3-dev python-dev python3-numpy python-numpy \
                         python3-setuptools python-setuptools python3-pip python-pip python3-scipy python-scipy \
                         ffmpeg libffmpeg*-dev
 
