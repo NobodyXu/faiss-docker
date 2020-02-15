@@ -75,7 +75,7 @@ RUN chmod a+xs /usr/local/bin/su-exec
 
 USER user
 ARG branch=master
-RUN git clone -b $branch https://github.com/facebookresearch/faiss /usr/local/src/faiss
+RUN git clone --depth 1 -b $branch https://github.com/facebookresearch/faiss /usr/local/src/faiss
 WORKDIR /usr/local/src/faiss
 
 RUN LDFLAGS=-L/opt/intel/mkl/lib/intel64/ ./configure --without-cuda
