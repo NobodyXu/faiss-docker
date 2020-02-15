@@ -5,8 +5,8 @@ ARG toolchain=llvm
 ADD install_llvm.sh /tmp/
 
 # Install apt-fast to speed up downloading packages
-ADD apt-fast/* /tmp/
-RUN /tmp/install_apt-fast.sh
+ADD apt-fast/* /tmp/apt-fast/
+RUN /tmp/apt-fast/install_apt-fast.sh
 
 # Install basic software for adding apt repository and downloading source code to compile
 RUN apt-fast update && \
@@ -38,7 +38,7 @@ RUN apt-fast update && \
 RUN if [ $toolchain = "llvm" ]; then /tmp/install_llvm.sh; fi
 
 # Remove apt-fast and purge basic software for adding apt repository
-RUN /tmp/remove_apt-fast.sh
+RUN /tmp/apt-fast/remove_apt-fast.sh
 RUN apt-get remove -y apt-transport-https gnupg2 gnupg-agent software-properties-common
 RUN apt-get autoremove -y
 
