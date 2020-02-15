@@ -48,7 +48,7 @@ RUN apt-get remove -y apt-transport-https gnupg2 gnupg-agent software-properties
 RUN apt-get autoremove -y
 
 # Clean /tmp, cache of downloaded packages and apt indexes
-RUN rm -rf /tmp/* && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/*
 
 FROM Preparation AS Configuration
 
