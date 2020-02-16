@@ -1,6 +1,6 @@
 #!/bin/bash -ex
 
-if [ ${DOCKER_TAG} != "master" ]; then
+if [ ${DOCKER_TAG} != "latest" ]; then
     branch=${DOCKER_TAG}
 else
     branch=master
