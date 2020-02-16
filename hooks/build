@@ -1,4 +1,10 @@
 #!/bin/bash -ex
 
-time docker build --target release -t nobodyxu/faiss:${DOCKER_TAG} .
-time docker build --target with-src -t nobodyxu/faiss:${DOCKER_TAG}-with-src .
+if [ ${DOCKER_TAG} != "master" ]; then
+    branch=${DOCKER_TAG}
+else
+    branch=master
+fi
+
+time docker build --target release  --build-arg branch=$branch -t nobodyxu/faiss:${DOCKER_TAG} .
+time docker build --target with-src --build-arg branch=$branch -t nobodyxu/faiss:${DOCKER_TAG}-with-src .
