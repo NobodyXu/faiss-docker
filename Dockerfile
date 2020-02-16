@@ -1,5 +1,6 @@
-# Prepare to build faiss
-FROM debian:buster AS Preparation
+FROM nobodyxu/intel-mkl:latest-debian-buster AS intel-mkl
+
+FROM intel-mkl AS Env_setup
 
 ARG toolchain=llvm
 ADD install_llvm.sh /tmp/
@@ -11,26 +12,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 ADD apt-fast/* /tmp/apt-fast/
 RUN /tmp/apt-fast/install_apt-fast.sh
 
-# Install basic software for adding apt repository and downloading source code to compile
-RUN apt-fast update && \
-    apt-fast install -y --no-install-recommends apt-transport-https ca-certificates gnupg2 gnupg-agent \
-                                                software-properties-common wget curl git apt-utils
-
-# Install MKL
-## Install official Intel MKL repository for apt
-## Commands below adapted from:
-##     https://software.intel.com/en-us/articles/installing-intel-free-libs-and-python-apt-repo
-##     https://github.com/eddelbuettel/mkl4deb
-RUN curl --progress-bar https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2019.PUB | apt-key add -
-RUN wget --progress=dot https://apt.repos.intel.com/setup/intelproducts.list -O /etc/apt/sources.list.d/intelproducts.list
-RUN apt-fast update && apt-fast install -y $(apt-cache search intel-mkl-2020 | cut -d '-' -f 1,2,3,4  | tail -n 1)
-
-## Configure dynamic linker to use MKL
-RUN echo "/opt/intel/lib/intel64"     >  /etc/ld.so.conf.d/mkl.conf
-RUN echo "/opt/intel/mkl/lib/intel64" >> /etc/ld.so.conf.d/mkl.conf
-RUN ldconfig
-
-RUN echo "MKL_THREADING_LAYER=GNU" >> /etc/environment
+# Install softwares for downloading
+RUN apt-fast update && apt-fast install -y git ca-certificates curl wget
 
 # Install necessary build tools and headers/libs
 RUN apt-fast update && \
@@ -46,28 +29,27 @@ RUN if [ $toolchain = "llvm" ]; then /tmp/install_llvm.sh; fi
 RUN /tmp/apt-fast/remove_apt-fast.sh
 RUN apt-get remove -y apt-transport-https gnupg2 gnupg-agent software-properties-common apt-utils
 RUN apt-get autoremove -y
-
 # Clean /tmp, cache of downloaded packages and apt indexes
 RUN apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/*
 
-FROM Preparation AS Configuration
-
 # Workaround for 'Python.h not found'
 RUN bash -c 'for py_include in /usr/include/python*; do ln -s $py_include /usr/local/include; done'
-
-# Workaround for 'Cannot lod libmkl_acx2.so or libmkl_def.so', learnt from:
-#     https://software.intel.com/en-us/forums/intel-math-kernel-library/topic/748309
-ENV LD_PRELOAD=/opt/intel/mkl/lib/intel64/libmkl_def.so:/opt/intel/mkl/lib/intel64/libmkl_avx2.so:/opt/intel/mkl/lib/intel64/libmkl_core.so:/opt/intel/mkl/lib/intel64/libmkl_intel_lp64.so:/opt/intel/mkl/lib/intel64/libmkl_intel_thread.so:/opt/intel/lib/intel64_lin/libiomp5.so
 
 # Add user as building software as root is just **not a good idea**
 RUN useradd -m user
 RUN mkdir -p /usr/local/src && chmod -R 777 /usr/local/src
 
+FROM intel-mkl AS base
+COPY --from=Env_setup / /
+
+# Workaround for 'Cannot lod libmkl_acx2.so or libmkl_def.so', learnt from:
+#     https://software.intel.com/en-us/forums/intel-math-kernel-library/topic/748309
+ENV LD_PRELOAD=/opt/intel/mkl/lib/intel64/libmkl_def.so:/opt/intel/mkl/lib/intel64/libmkl_avx2.so:/opt/intel/mkl/lib/intel64/libmkl_core.so:/opt/intel/mkl/lib/intel64/libmkl_intel_lp64.so:/opt/intel/mkl/lib/intel64/libmkl_intel_thread.so:/opt/intel/lib/intel64_lin/libiomp5.so
 # Set flags
 ENV CC=/usr/bin/cc CXX=/usr/bin/c++ CFLAGS="-flto" CXXFLAGS="-flto"
 
 # ... Now build the software!
-FROM Configuration AS Build
+FROM base AS Build
 
 ## Install su-exec to replace sudo
 RUN wget --progress=dot https://github.com/NobodyXu/su-exec/releases/download/v0.3/su-exec -O /usr/local/bin/su-exec
@@ -97,13 +79,8 @@ RUN su-exec root:root rm /usr/local/bin/su-exec
 
 RUN rm -rf /tmp/*
 
-FROM debian:buster AS release
-
-COPY --from=Configuration / /
+FROM base AS release
 COPY --from=Build /usr/local/ /usr/local/
-
-ENV LD_PRELOAD=/opt/intel/mkl/lib/intel64/libmkl_def.so:/opt/intel/mkl/lib/intel64/libmkl_avx2.so:/opt/intel/mkl/lib/intel64/libmkl_core.so:/opt/intel/mkl/lib/intel64/libmkl_intel_lp64.so:/opt/intel/mkl/lib/intel64/libmkl_intel_thread.so:/opt/intel/lib/intel64_lin/libiomp5.so
-
 USER user
 
 FROM release AS with-src
