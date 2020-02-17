@@ -12,9 +12,6 @@ ENV DEBIAN_FRONTEND=noninteractive
 ADD apt-fast/* /tmp/apt-fast/
 RUN /tmp/apt-fast/install_apt-fast.sh
 
-# Install softwares for downloading
-RUN apt-fast update && apt-fast install --no-install-recommends -y git ca-certificates
-
 # Install necessary build tools and headers/libs
 RUN apt-fast update && \
     apt-fast install -y --no-install-recommends \
@@ -53,6 +50,8 @@ FROM base AS Build
 
 # curl is required for testing in faiss.
 RUN apt-get update && apt-get install --no-install-recommends -y curl
+# Install softwares for cloning
+RUN apt-fast update && apt-fast install --no-install-recommends -y git ca-certificates
 
 ## Install su-exec to replace sudo
 ADD https://github.com/NobodyXu/su-exec/releases/download/v0.3/su-exec /usr/local/bin/su-exec
