@@ -20,7 +20,7 @@ RUN apt-fast update && \
                         ffmpeg libffmpeg*-dev
 
 # Install llvm only when asked
-RUN if [ $toolchain = "llvm" ]; then /tmp/install_llvm.sh; else apt-fast update && apt-fast install -y gcc g++ fi
+RUN if [ $toolchain = "llvm" ]; then /tmp/install_llvm.sh; else apt-fast update && apt-fast install -y gcc g++; fi
 
 # Remove apt-fast and purge basic software for adding apt repository
 RUN /tmp/apt-fast/remove_apt-fast.sh
