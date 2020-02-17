@@ -13,7 +13,7 @@ ADD apt-fast/* /tmp/apt-fast/
 RUN /tmp/apt-fast/install_apt-fast.sh
 
 # Install softwares for downloading
-RUN apt-fast update && apt-fast install -y git ca-certificates curl wget
+RUN apt-fast update && apt-fast install --no-install-recommends -y git ca-certificates curl
 
 # Install necessary build tools and headers/libs
 RUN apt-fast update && \
