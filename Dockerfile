@@ -13,7 +13,7 @@ ADD apt-fast/* /tmp/apt-fast/
 RUN /tmp/apt-fast/install_apt-fast.sh
 
 # Install softwares for downloading
-RUN apt-fast update && apt-fast install -y git ca-certificates curl wget
+RUN apt-fast update && apt-fast install --no-install-recommends -y git ca-certificates
 
 # Install necessary build tools and headers/libs
 RUN apt-fast update && \
@@ -51,8 +51,11 @@ ENV CC=/usr/bin/cc CXX=/usr/bin/c++ CFLAGS="-flto" CXXFLAGS="-flto"
 # ... Now build the software!
 FROM base AS Build
 
+# curl is required for testing in faiss.
+RUN apt-get update && apt-get install --no-install-recommends -y curl
+
 ## Install su-exec to replace sudo
-RUN wget --progress=dot https://github.com/NobodyXu/su-exec/releases/download/v0.3/su-exec -O /usr/local/bin/su-exec
+ADD https://github.com/NobodyXu/su-exec/releases/download/v0.3/su-exec /usr/local/bin/su-exec
 RUN chmod a+xs /usr/local/bin/su-exec
 
 USER user
