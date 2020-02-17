@@ -52,7 +52,7 @@ ENV CC=/usr/bin/cc CXX=/usr/bin/c++ CFLAGS="-flto" CXXFLAGS="-flto"
 FROM base AS Build
 
 ## Install su-exec to replace sudo
-RUN wget --progress=dot https://github.com/NobodyXu/su-exec/releases/download/v0.3/su-exec -O /usr/local/bin/su-exec
+ADD https://github.com/NobodyXu/su-exec/releases/download/v0.3/su-exec /usr/local/bin/su-exec
 RUN chmod a+xs /usr/local/bin/su-exec
 
 USER user
