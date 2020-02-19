@@ -1,6 +1,6 @@
 #!/bin/bash
 
-apt-fast install -y clang lld llvm
+apt-fast install -y --no-install-recommends clang lld llvm
 
 # Configure llvm as default toolchain
 ## Use ld.ldd as default linker
