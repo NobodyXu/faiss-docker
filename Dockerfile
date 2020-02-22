@@ -1,3 +1,5 @@
+FROM nobodyxu/apt-fast:latest-debian-buster AS apt-fast
+
 FROM nobodyxu/intel-mkl:latest-debian-buster AS intel-mkl
 
 FROM intel-mkl AS Env_setup
@@ -7,17 +9,14 @@ ADD install_llvm.sh /tmp/
 
 # Disable interctive debconf post-install-configuration
 ENV DEBIAN_FRONTEND=noninteractive
-
 # Install apt-fast to speed up downloading packages
-ADD apt-fast/* /tmp/apt-fast/
-RUN /tmp/apt-fast/install_apt-fast.sh
+COPY --from=apt-fast /usr/local/ /usr/local/
 
 # Install necessary build tools and headers/libs
-RUN apt-fast update && \
-    apt-fast install -y --no-install-recommends \
-                        make swig swig3.0 python3-dev python-dev python3-numpy python-numpy \
-                        python3-setuptools python-setuptools python3-pip python-pip python3-scipy python-scipy \
-                        ffmpeg libffmpeg*-dev
+RUN apt-auto install -y --no-install-recommends \
+                     make swig swig3.0 python3-dev python-dev python3-numpy python-numpy \
+                     python3-setuptools python-setuptools python3-pip python-pip python3-scipy python-scipy \
+                     ffmpeg libffmpeg*-dev
 
 # Install llvm only when asked
 RUN if [ $toolchain = "llvm" ]; then /tmp/install_llvm.sh; else apt-fast update && apt-fast install -y gcc g++; fi
@@ -48,10 +47,15 @@ ENV CC=/usr/bin/cc CXX=/usr/bin/c++ CFLAGS="-flto" CXXFLAGS="-flto"
 # ... Now build the software!
 FROM base AS Build
 
+# Disable interctive debconf post-install-configuration
+ENV DEBIAN_FRONTEND=noninteractive
+# Install apt-fast to speed up downloading packages
+COPY --from=apt-fast /usr/local/ /usr/local/
+
 # curl is required for testing in faiss.
-RUN apt-get update && apt-get install --no-install-recommends -y curl
+RUN apt-auto install --no-install-recommends -y curl
 # Install softwares for cloning
-RUN apt-get update && apt-get install --no-install-recommends -y git ca-certificates
+RUN apt-auto install --no-install-recommends -y git ca-certificates
 
 ## Install su-exec to replace sudo
 ADD https://github.com/NobodyXu/su-exec/releases/download/v0.3/su-exec /usr/local/bin/su-exec
