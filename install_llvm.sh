@@ -1,6 +1,6 @@
 #!/bin/bash
 
-apt-fast install -y --no-install-recommends clang lld llvm libomp-dev
+apt-auto install -y --no-install-recommends clang lld llvm libomp-dev
 
 # Configure llvm as default toolchain
 ## Use ld.ldd as default linker
