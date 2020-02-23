@@ -22,9 +22,7 @@ RUN apt-auto install -y --no-install-recommends \
 RUN if [ $toolchain = "llvm" ]; then /tmp/install_llvm.sh; else apt-fast update && apt-fast install -y gcc g++; fi
 
 # Remove apt-fast and purge basic software for adding apt repository
-RUN /tmp/apt-fast/remove_apt-fast.sh
-RUN apt-get remove -y apt-transport-https gnupg2 gnupg-agent software-properties-common apt-utils
-RUN apt-get autoremove -y
+RUN rm_apt-fast.sh
 # Clean /tmp, cache of downloaded packages and apt indexes
 RUN apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/*
 
@@ -61,6 +59,9 @@ RUN apt-auto install --no-install-recommends -y git ca-certificates
 ADD https://github.com/NobodyXu/su-exec/releases/download/v0.3/su-exec /usr/local/bin/su-exec
 RUN chmod a+xs /usr/local/bin/su-exec
 
+# Set /usr/local/src to 777 again due to the last `COPY` command
+RUN chmod -R 777 /usr/local/src
+
 USER user
 ARG branch=master
 RUN git clone --depth 1 -b $branch https://github.com/facebookresearch/faiss /usr/local/src/faiss
@@ -87,6 +88,7 @@ RUN rm -rf /tmp/*
 
 FROM base AS release
 COPY --from=Build /usr/local/ /usr/local/
+RUN ldconfig
 USER user
 
 FROM release AS with-src
