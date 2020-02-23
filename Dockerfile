@@ -23,8 +23,6 @@ RUN if [ $toolchain = "llvm" ]; then /tmp/install_llvm.sh; else apt-fast update 
 
 # Remove apt-fast and purge basic software for adding apt repository
 RUN rm_apt-fast.sh
-RUN apt-get remove -y apt-transport-https gnupg2 gnupg-agent software-properties-common apt-utils
-RUN apt-get autoremove -y
 # Clean /tmp, cache of downloaded packages and apt indexes
 RUN apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/*
 
