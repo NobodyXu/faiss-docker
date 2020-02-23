@@ -15,3 +15,7 @@ RUN gen_Main.sh | clang++ -x c++ -I/usr/local/include/faiss -L/usr/local/lib/ -l
 RUN ldd ./a.out && ./a.out
 
 RUN gen_Main.sh | clang++ -x c++ -I/usr/local/include/faiss -L/usr/local/lib/ -lfaiss - && ./a.out
+
+# Run test on src
+WORKDIR /usr/local/src/faiss/
+RUN make test
