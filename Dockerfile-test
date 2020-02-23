@@ -1,0 +1,21 @@
+ARG base=nobodyxu/faiss:latest-with-src
+
+FROM $base AS test
+
+ADD gen_Main.sh /tmp/
+ADD test_faiss.py /tmp/
+
+# Run python test
+RUN f2py && f2py2 && f2py2.7
+RUN /tmp/test_faiss.py
+
+# Run c++ test
+WORKDIR /tmp/
+RUN gen_Main.sh | clang++ -x c++ -I/usr/local/include/faiss -L/usr/local/lib/ -lfaiss -
+RUN ldd ./a.out && ./a.out
+
+RUN gen_Main.sh | clang++ -x c++ -I/usr/local/include/faiss -L/usr/local/lib/ -lfaiss - && ./a.out
+
+# Run test on src
+WORKDIR /usr/local/src/faiss/
+RUN make test
