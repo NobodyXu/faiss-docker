@@ -88,6 +88,7 @@ RUN rm -rf /tmp/*
 
 FROM base AS release
 COPY --from=Build /usr/local/ /usr/local/
+RUN ldconfig
 USER user
 
 FROM release AS with-src
