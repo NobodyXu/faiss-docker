@@ -59,6 +59,9 @@ RUN apt-auto install --no-install-recommends -y git ca-certificates
 ADD https://github.com/NobodyXu/su-exec/releases/download/v0.3/su-exec /usr/local/bin/su-exec
 RUN chmod a+xs /usr/local/bin/su-exec
 
+# Set /usr/local/src to 777 again due to the last `COPY` command
+RUN chmod -R 777 /usr/local/src
+
 USER user
 ARG branch=master
 RUN git clone --depth 1 -b $branch https://github.com/facebookresearch/faiss /usr/local/src/faiss
