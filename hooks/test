@@ -1,0 +1,3 @@
+#!/bin/bash -ex
+
+time docker build --build-arg base=nobodyxu/faiss:${DOCKER_TAG}-with-src -f Dockerfile-test .
