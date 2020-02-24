@@ -11,10 +11,10 @@ RUN /tmp/test_faiss.py
 
 # Run c++ test
 WORKDIR /tmp/
-RUN gen_Main.sh | clang++ -x c++ -I/usr/local/include/faiss -L/usr/local/lib/ -lfaiss -
+RUN /tmp/gen_Main.sh | clang++ -x c++ -I/usr/local/include/faiss -L/usr/local/lib/ -lfaiss -
 RUN ldd ./a.out && ./a.out
 
-RUN gen_Main.sh | clang++ -x c++ -I/usr/local/include/faiss -L/usr/local/lib/ -lfaiss - && ./a.out
+RUN /tmp/gen_Main.sh | clang++ -x c++ -I/usr/local/include/faiss -L/usr/local/lib/ -lfaiss -static - && ./a.out
 
 # Run test on src
 WORKDIR /usr/local/src/faiss/
