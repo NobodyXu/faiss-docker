@@ -18,4 +18,5 @@ RUN /tmp/gen_Main.sh | clang++ -x c++ -I/usr/local/include/faiss -L/usr/local/li
 
 # Run test on src
 WORKDIR /usr/local/src/faiss/
+RUN apt-get install -y --no-install-recommends curl
 RUN make test
