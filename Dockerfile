@@ -72,8 +72,6 @@ RUN LDFLAGS=-L/opt/intel/mkl/lib/intel64/ ./configure --without-cuda
 RUN make -j $(nproc)
 RUN make -C python -j $(nproc)
 
-RUN make test
-
 RUN su-exec root:root make install
 RUN su-exec root:root make -C python install
 
