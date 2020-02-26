@@ -1,6 +1,6 @@
-FROM nobodyxu/apt-fast:latest-debian-buster AS apt-fast
+FROM nobodyxu/apt-fast:latest-debian-buster-slim AS apt-fast
 
-FROM nobodyxu/intel-mkl:latest-debian-buster AS intel-mkl
+FROM nobodyxu/intel-mkl:latest-debian-buster-slim AS intel-mkl
 
 FROM intel-mkl AS Env_setup
 
