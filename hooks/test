@@ -1,3 +1,8 @@
 #!/bin/bash -ex
 
+if [ $DOCKER_TAG = "latest" ]; then
+    echo Skip testing when building for master branch
+    exit
+fi
+
 time docker build --build-arg base=nobodyxu/faiss:${DOCKER_TAG}-with-src -f Dockerfile-test .
