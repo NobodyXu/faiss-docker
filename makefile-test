@@ -1,0 +1,38 @@
+# Copyright (c) Facebook, Inc. and its affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
+CXX          = /usr/bin/c++ -std=c++11
+CPPFLAGS     = -DFINTEGER=int  -fopenmp
+CXXFLAGS     = -fPIC -m64 -Wno-sign-compare -flto
+CPUFLAGS     = -mpopcnt -msse4
+LDFLAGS      = -fopenmp -L/opt/intel/mkl/lib/intel64/
+LIBS         = -lmkl_intel_lp64 -lmkl_gnu_thread -lmkl_core -lgomp -lpthread -lm -ldl
+
+TESTS_SRC = $(wildcard *.cpp)
+TESTS_OBJ = $(TESTS_SRC:.cpp=.o)
+
+all: run py_test
+
+py_test:
+	python -m unittest discover ./ -v
+
+run: tests-static tests-dynamic
+	./tests-static
+	ldd ./tests-dynamic
+	./tests-dynamic
+
+tests-static: $(TESTS_OBJ) /usr/local/lib/libfaiss.a gtest/make/gtest_main.a
+	$(CXX) -o $@ $^ $(LDFLAGS) $(LIBS)
+
+tests-dynamic: $(TESTS_OBJ) gtest/make/gtest_main.a
+	$(CXX) -o $@ $^ $(LDFLAGS) $(LIBS) -L/usr/local/lib/ -lfaiss
+
+%.o: %.cpp gtest
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(CPUFLAGS) -c -o $@ $< -Igtest/include -I/usr/local/include/
+
+gtest/make/gtest_main.a: gtest
+	$(MAKE) -C gtest/make CXX="$(CXX)" CXXFLAGS="$(CXXFLAGS)" gtest_main.a
+
+.PHONY: all run py_test
