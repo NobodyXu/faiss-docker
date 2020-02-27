@@ -2,23 +2,15 @@ ARG base=nobodyxu/faiss:latest-with-src
 
 FROM $base AS test
 
-ADD gen_Main.sh /tmp/
-ADD test_faiss.py /tmp/
+# Build /tmp/test/
+ADD --chown=user:user makefile-test /tmp/test/Makefile
+RUN cp tests/*.cpp tests/*.py /tmp/test/
 
-# Run python test
-RUN f2py && f2py2 && f2py2.7
-RUN /tmp/test_faiss.py
+# Download gtest to /tmp/test/
+ADD --chown=user:user https://github.com/google/googletest/archive/release-1.8.0.tar.gz /tmp/
+RUN tar xvzf /tmp/release-1.8.0.tar.gz && \
+    mv googletest-release-1.8.0/googletest/ /tmp/test/gtest/
 
-# Run c++ test
-WORKDIR /tmp/
-RUN /tmp/gen_Main.sh | clang++ -x c++ -I/usr/local/include/faiss -L/usr/local/lib/ -lfaiss -
-RUN ldd ./a.out && ./a.out
-
-RUN /tmp/gen_Main.sh | clang++ -x c++ -I/usr/local/include/faiss -L/usr/local/lib/ -lfaiss -static - && ./a.out
-
-# Run test on src
-WORKDIR /usr/local/src/faiss/
-USER root
-RUN apt-get update && apt-get install -y --no-install-recommends curl
-USER user
-RUN make test
+# Run the test
+WORKDIR /tmp/test/
+RUN make
