@@ -3,7 +3,7 @@ ARG base=nobodyxu/faiss:latest-with-src
 FROM $base AS test
 
 # Build /tmp/test/
-ADD makefile-test /tmp/test/Makefile
+ADD --chown=user:user makefile-test /tmp/test/Makefile
 RUN cp tests/*.cpp tests/*.py /tmp/test/
 
 # Download gtest to /tmp/test/
