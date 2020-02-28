@@ -50,8 +50,6 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Install apt-fast to speed up downloading packages
 COPY --from=apt-fast /usr/local/ /usr/local/
 
-# curl is required for testing in faiss.
-RUN apt-auto install --no-install-recommends -y curl
 # Install softwares for cloning
 RUN apt-auto install --no-install-recommends -y git ca-certificates
 
@@ -81,8 +79,6 @@ RUN su-exec root:root mv /usr/local/src/faiss /home/user/faiss
 
 ## Remove su-exec
 RUN su-exec root:root rm /usr/local/bin/su-exec
-
-RUN rm -rf /tmp/*
 
 FROM base AS release
 COPY --from=Build /usr/local/ /usr/local/
