@@ -68,10 +68,10 @@ WORKDIR /usr/local/src/faiss
 RUN LDFLAGS=-L/opt/intel/mkl/lib/intel64/ ./configure --without-cuda
 
 RUN make -j $(nproc)
-RUN make -C python -j $(nproc)
+RUN make -C faiss/python -j $(nproc)
 
 RUN su-exec root:root make install
-RUN su-exec root:root make -C python install
+RUN su-exec root:root make -C faiss/python install
 
 # Move faiss to another directory for coping and chowning in latest
 WORKDIR /
